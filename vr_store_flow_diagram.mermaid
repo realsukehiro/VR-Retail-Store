@@ -1,0 +1,57 @@
+flowchart TD
+    %% Main Components
+    Player[Player/User]
+    PlayerMovement[PlayerMovement]
+    Interactor[Interactor]
+    Product[Product]
+    ProductDetailUI[ProductDetailUI]
+    CartManager[CartManager]
+    CartUIManager[CartUIManager]
+    CartItemUI[CartItemUI]
+    CartInputController[CartInputController]
+    CartCheckoutHandler[CartCheckoutHandler]
+    ConfirmationPanel[Confirmation Panel]
+
+    %% Player Interactions
+    Player -->|WASD Movement/\nMouse Look/\nJump/Crouch| PlayerMovement
+    Player -->|Press E to Interact| Interactor
+    Player -->|Press C to Toggle Cart| CartInputController
+
+    %% Interactor Flow
+    Interactor -->|Raycast Hit| Product
+    Product -->|Show Details| ProductDetailUI
+    
+    %% Product Detail UI Flow
+    ProductDetailUI -->|"Add to Cart Button"| Product
+    Product -->|"AddToCart()"| CartManager
+    ProductDetailUI -->|"Close (Press E)"| HideDetails[Hide Product Details]
+    
+    %% Cart Management
+    CartManager -->|"GetCartItems()"| CartUIManager
+    CartUIManager -->|"Setup(product, quantity)"| CartItemUI
+    CartItemUI -->|"ChangeQuantity()/\nRemoveItem()"| CartManager
+    
+    %% Cart UI Flow
+    CartInputController -->|"Toggle Cart Panel"| CartUIManager
+    CartInputController -->|"When Cart Open:\nPause Game,\nShow Cursor"| GameState[Game State]
+    CartInputController -->|"When Cart Closed:\nResume Game,\nHide Cursor"| GameState
+    
+    %% Checkout Flow
+    CartUIManager -->|"Buy Button"| CartCheckoutHandler
+    CartCheckoutHandler -->|"Clear Cart,\nShow Confirmation"| ConfirmationPanel
+    ConfirmationPanel -->|"Close Button"| ResumeGame[Resume Game]
+    
+    %% Styling
+    classDef player fill:#f96,stroke:#333,stroke-width:2px
+    classDef ui fill:#bbf,stroke:#333,stroke-width:1px
+    classDef manager fill:#bfb,stroke:#333,stroke-width:1px
+    classDef action fill:#ddd,stroke:#333,stroke-width:1px
+    classDef state fill:#fbb,stroke:#333,stroke-width:1px
+    
+    class Player player
+    class PlayerMovement player
+    class Interactor player
+    class ProductDetailUI,CartUIManager,CartItemUI,CartInputController,ConfirmationPanel ui
+    class CartManager,CartCheckoutHandler manager
+    class Product,HideDetails,ResumeGame action
+    class GameState state
